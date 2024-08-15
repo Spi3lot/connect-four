@@ -1,5 +1,9 @@
 package org.spi3lot.four.data
 
+import org.spi3lot.four.board.FourBoard
+import org.spi3lot.four.board.FourBoardDirection
+import org.spi3lot.four.board.FourBoardLine
+
 /**
  * @author Emilio Zottel
  * @since 14.08.2024, Mi.
@@ -7,11 +11,20 @@ package org.spi3lot.four.data
 class FourState(
     private val config: FourConfig,
     val board: FourBoard = FourBoard(config),
-    val won: BooleanArray = BooleanArray(config.playerCount),
+    val winningLines: Array<MutableList<FourBoardLine>> = Array(config.playerCount) { mutableListOf() },
 ) {
 
     var player: Int = 0
         private set
+
+    fun reset() {
+        board.reset()
+        player = 0
+
+        for (i in 0..<config.playerCount) {
+            winningLines[i].clear()
+        }
+    }
 
     fun placeToken(column: Int): Int? {
         val row = board.dropToken(column) ?: return null
@@ -20,20 +33,36 @@ class FourState(
     }
 
     fun nextPlayer() {
-        player = (player + 1) % config.playerCount
+        for (i in 1..<config.playerCount) {
+            val candidate = (player + i) % config.playerCount
+
+            if (config.continueAfterFinalizedRanking || winningLines[candidate].isEmpty()) {
+                player = candidate
+                return
+            }
+        }
+
+        error("There is no next player, all players have a rank already.")
     }
 
-    fun updateWon(player: Int) {
-        for (y in 0..<config.height) {
-            for (x in 0..<config.width) {
-                for (direction in FourDirection.entries) {
-                    if (board.countBidirectional(player, direction, x, y) >= config.min) {
-                        won[player] = true
+    fun updateWon(player: Int, returnOnFirstLine: Boolean = false) {
+        config.forEachCell { x, y ->
+            for (direction in FourBoardDirection.ALL) {
+                val line = board.bidirectionalWinningLine(player, direction, x, y)
+
+                if (line != null && line.length >= config.minWinningLineLength) {
+                    winningLines[player].add(line)
+
+                    if (returnOnFirstLine) {
                         return
                     }
                 }
             }
         }
+    }
+
+    fun isRankingFinalized(): Boolean {
+        return winningLines.count { it.isEmpty() } <= 1
     }
 
 }
