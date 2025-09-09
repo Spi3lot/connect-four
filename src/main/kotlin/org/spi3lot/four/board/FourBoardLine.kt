@@ -1,6 +1,7 @@
 package org.spi3lot.four.board
 
 import kotlin.math.abs
+import kotlin.math.max
 
 /**
  * @author Emilio Zottel
@@ -12,7 +13,7 @@ data class FourBoardLine(
 ) {
 
     val length: Int
-        get() = abs(end.x - start.x) + 1
+        get() = 1 + max(abs(end.x - start.x), abs(end.y - start.y))
 
     operator fun contains(point: FourBoardPosition): Boolean {
         return point.x in start.x..end.x && point.y in start.y..end.y
