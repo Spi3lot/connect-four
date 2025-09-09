@@ -51,7 +51,7 @@ class ConnectFour : PApplet() {
     }
 
     override fun keyPressed() {
-        if (key == 'R') {
+        if (key.uppercase() == "R") {
             state.reset()
             redraw()
         }
