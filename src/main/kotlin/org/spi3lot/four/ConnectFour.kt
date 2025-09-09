@@ -31,7 +31,16 @@ class ConnectFour : PApplet() {
     override fun draw() {
         val cellWidth = width / config.width
         val cellHeight = height / config.height
-        background(config.colors[state.player])
+        var backgroundColorIndex = state.player
+
+        if (isGameOver()) {
+            backgroundColorIndex = state.winningLines
+                .mapIndexed { i, line -> i to line }
+                .maxBy { it.second.size }
+                .first
+        }
+
+        background(config.colors[backgroundColorIndex])
         stroke(0)
         strokeWeight(1f)
         drawGrid(cellWidth, cellHeight)
@@ -40,14 +49,15 @@ class ConnectFour : PApplet() {
     }
 
     override fun mousePressed() {
+        if (isGameOver()) {
+            return
+        }
+
         val column = (config.width * mouseX / width.toFloat()).toInt()
         val row = state.placeToken(column) ?: return
         state.updateWon(state.player, column, row)
-
-        if (config.continueAfterFinalizedRanking || !state.isRankingFinalized()) {
-            state.nextPlayer()
-            redraw()
-        }
+        state.nextPlayer()
+        redraw()
     }
 
     override fun keyPressed() {
@@ -56,5 +66,7 @@ class ConnectFour : PApplet() {
             redraw()
         }
     }
+
+    fun isGameOver(): Boolean = config.continueAfterFinalizedRanking || state.isRankingFinalized()
 
 }
