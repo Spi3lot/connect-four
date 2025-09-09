@@ -1,4 +1,7 @@
 # Connect Four
+Cute little implementation of the famous game of connect four, playable in local multiplayer or against yourself.
+
+Oh, and it supports more than just 2 players. The minimum length of a line for it to be considered a winning line is also customizable!
 
 ## Yellow's turn
 <img width="642" height="572" alt="image" src="https://github.com/user-attachments/assets/cd34b6f6-9edb-4cc7-97d0-9d99c1f27293" />
