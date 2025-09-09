@@ -41,8 +41,8 @@ class ConnectFour : PApplet() {
 
     override fun mousePressed() {
         val column = (config.width * mouseX / width.toFloat()).toInt()
-        state.placeToken(column) ?: return
-        state.updateWon(state.player)
+        val row = state.placeToken(column) ?: return
+        state.updateWon(state.player, column, row)
 
         if (config.continueAfterFinalizedRanking || !state.isRankingFinalized()) {
             state.nextPlayer()

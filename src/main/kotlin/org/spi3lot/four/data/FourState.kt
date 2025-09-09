@@ -45,17 +45,15 @@ class FourState(
         error("There is no next player, all players have a rank already.")
     }
 
-    fun updateWon(player: Int, returnOnFirstLine: Boolean = false) {
-        config.forEachCell { x, y ->
-            for (direction in FourBoardDirection.ALL) {
-                val line = board.bidirectionalWinningLine(player, direction, x, y)
+    fun updateWon(player: Int, column: Int, row: Int, returnOnFirstLine: Boolean = false) {
+        for (direction in FourBoardDirection.ALL) {
+            val line = board.bidirectionalWinningLine(player, direction, column, row)
 
-                if (line != null && line.length >= config.minWinningLineLength) {
-                    winningLines[player].add(line)
+            if (line != null && line.length >= config.minWinningLineLength) {
+                winningLines[player].add(line)
 
-                    if (returnOnFirstLine) {
-                        return
-                    }
+                if (returnOnFirstLine) {
+                    return
                 }
             }
         }
